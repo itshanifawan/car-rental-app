@@ -9,6 +9,8 @@ import {
   Search,
   X,
   ChevronDown,
+  MapPin,
+  ArrowUpDown,
 } from "lucide-react";
 import api from "../services/api";
 import { useAuth } from "../context/AuthContext";
@@ -46,11 +48,7 @@ const typeOptions = [
   "Luxury",
 ];
 
-const gearOptions = [
-  "Any",
-  "Automatic",
-  "Manual",
-];
+const gearOptions = ["Any", "Automatic", "Manual"];
 
 const sortOptions = [
   "Recommended",
@@ -135,7 +133,7 @@ export default function ListingPage() {
       console.error("Fetch cars error:", err);
 
       setError(
-        "Cars load nahi ho sakin. Backend chal raha hai check karein."
+        "We couldn't load the fleet. Please make sure the server is running and try again."
       );
 
       setCars([]);
@@ -190,42 +188,54 @@ export default function ListingPage() {
   };
 
   const FilterPanel = () => (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-7">
       {/* City */}
       <div>
-        <label className="text-xs font-semibold text-[#445064] mb-2 block">
-          City
+        <label className="text-[11px] uppercase tracking-wider font-bold text-[#777e84] mb-2 block">
+          Location
         </label>
 
-        <select
-          value={city}
-          onChange={(e) => setCity(e.target.value)}
-          className="w-full border border-[#0F1B2B]/20 px-3 py-2 text-sm font-medium bg-white focus:outline-none focus:ring-2 focus:ring-[#FFC93C]"
-        >
-          {cityOptions.map((c) => (
-            <option key={c} value={c}>
-              {c}
-            </option>
-          ))}
-        </select>
+        <div className="relative">
+          <MapPin
+            size={14}
+            className="absolute left-3 top-1/2 -translate-y-1/2 text-[#777e84]"
+          />
+
+          <select
+            value={city}
+            onChange={(e) => setCity(e.target.value)}
+            className="w-full appearance-none border border-[#111518]/10 bg-[#f8f8f6] pl-9 pr-8 py-3 text-sm font-medium text-[#111518] focus:outline-none focus:border-[#f5c542] transition-colors"
+          >
+            {cityOptions.map((c) => (
+              <option key={c} value={c}>
+                {c}
+              </option>
+            ))}
+          </select>
+
+          <ChevronDown
+            size={15}
+            className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-[#777e84]"
+          />
+        </div>
       </div>
 
       {/* Car Type */}
       <div>
-        <label className="text-xs font-semibold text-[#445064] mb-2 block">
-          Car type
+        <label className="text-[11px] uppercase tracking-wider font-bold text-[#777e84] mb-3 block">
+          Vehicle type
         </label>
 
-        <div className="flex flex-wrap gap-2">
+        <div className="grid grid-cols-2 gap-2">
           {typeOptions.map((t) => (
             <button
               key={t}
               type="button"
               onClick={() => setType(t)}
-              className={`text-xs font-semibold px-3 py-2 border transition-colors ${
+              className={`text-xs font-semibold px-3 py-2.5 border transition-all duration-200 ${
                 type === t
-                  ? "bg-[#0F1B2B] text-white border-[#0F1B2B]"
-                  : "bg-white text-[#445064] border-[#0F1B2B]/20 hover:border-[#0F1B2B]"
+                  ? "bg-[#111518] text-white border-[#111518] shadow-[3px_3px_0_#f5c542]"
+                  : "bg-white text-[#777e84] border-[#111518]/10 hover:border-[#111518]/30 hover:text-[#111518]"
               }`}
             >
               {t}
@@ -236,20 +246,20 @@ export default function ListingPage() {
 
       {/* Transmission */}
       <div>
-        <label className="text-xs font-semibold text-[#445064] mb-2 block">
+        <label className="text-[11px] uppercase tracking-wider font-bold text-[#777e84] mb-3 block">
           Transmission
         </label>
 
-        <div className="flex gap-2">
+        <div className="grid grid-cols-3 gap-2">
           {gearOptions.map((g) => (
             <button
               key={g}
               type="button"
               onClick={() => setGear(g)}
-              className={`text-xs font-semibold px-3 py-2 border transition-colors flex-1 ${
+              className={`text-xs font-semibold px-2 py-2.5 border transition-all duration-200 ${
                 gear === g
-                  ? "bg-[#0F1B2B] text-white border-[#0F1B2B]"
-                  : "bg-white text-[#445064] border-[#0F1B2B]/20 hover:border-[#0F1B2B]"
+                  ? "bg-[#111518] text-white border-[#111518]"
+                  : "bg-white text-[#777e84] border-[#111518]/10 hover:border-[#111518]/30 hover:text-[#111518]"
               }`}
             >
               {g}
@@ -260,12 +270,17 @@ export default function ListingPage() {
 
       {/* Price */}
       <div>
-        <div className="flex items-center justify-between mb-2">
-          <label className="text-xs font-semibold text-[#445064]">
-            Max price / day
-          </label>
+        <div className="flex items-end justify-between mb-3">
+          <div>
+            <label className="text-[11px] uppercase tracking-wider font-bold text-[#777e84] block">
+              Daily budget
+            </label>
+            <span className="text-xs text-[#777e84]">
+              Maximum price per day
+            </span>
+          </div>
 
-          <span className="font-display text-lg font-700">
+          <span className="font-display text-xl font-800 text-[#111518]">
             Rs {maxPrice.toLocaleString()}
           </span>
         </div>
@@ -279,15 +294,15 @@ export default function ListingPage() {
           onChange={(e) =>
             setMaxPrice(Number(e.target.value))
           }
-          className="w-full accent-[#FFC93C]"
+          className="w-full accent-[#f5c542]"
         />
 
-        <div className="flex justify-between mt-1">
-          <span className="text-[10px] text-[#445064]">
+        <div className="flex justify-between mt-2">
+          <span className="text-[10px] text-[#777e84]">
             Rs 2,000
           </span>
 
-          <span className="text-[10px] text-[#445064]">
+          <span className="text-[10px] text-[#777e84]">
             Rs 30,000+
           </span>
         </div>
@@ -297,421 +312,506 @@ export default function ListingPage() {
       <button
         type="button"
         onClick={resetFilters}
-        className="text-xs font-semibold text-[#445064] underline self-start hover:text-[#0F1B2B]"
+        className="flex items-center gap-2 text-xs font-bold text-[#777e84] hover:text-[#111518] transition-colors self-start"
       >
-        Reset all filters
+        <X size={13} />
+        Clear all filters
       </button>
     </div>
   );
 
   return (
-    <div className="font-body bg-[#EDEEF0] text-[#0F1B2B] min-h-screen">
+    <div className="font-body bg-[#f3f3f0] text-[#111518] min-h-screen">
       {fonts}
 
       {/* NAVBAR */}
-      <nav className="flex items-center justify-between px-6 md:px-12 py-5 max-w-7xl mx-auto">
-        {/* Logo */}
-        <div
-          className="font-display text-2xl md:text-3xl font-800 tracking-tight cursor-pointer"
-          onClick={() => navigate("/")}
-        >
-          DRIVE
-          <span className="text-[#FFC93C]">
-            HUB
-          </span>
-        </div>
-
-        {/* Desktop Navigation */}
-        <div className="hidden md:flex items-center gap-8 text-sm font-medium text-[#445064]">
-          <button
-            type="button"
-            onClick={() => navigate("/fleet")}
-            className="text-[#0F1B2B] font-semibold"
-          >
-            Fleet
-          </button>
-
+      <nav className="dh-nav sticky top-0 z-40 bg-[#f3f3f0]/90 border-b border-[#111518]/5">
+        <div className="max-w-7xl mx-auto px-6 md:px-12 py-5 flex items-center justify-between">
+          {/* Logo */}
           <button
             type="button"
             onClick={() => navigate("/")}
-            className="hover:text-[#0F1B2B] transition-colors"
+            className="font-display text-2xl md:text-3xl font-800 tracking-tight"
           >
-            How it works
+            DRIVE<span className="text-[#f5c542]">HUB</span>
           </button>
 
-          <button
-            type="button"
-            onClick={() => navigate("/")}
-            className="hover:text-[#0F1B2B] transition-colors"
-          >
-            Locations
-          </button>
-        </div>
-
-        {/* User Area */}
-        {user ? (
-          <div className="flex items-center gap-3">
-            {user.role === "admin" ? (
-              <button
-                type="button"
-                onClick={() => navigate("/admin")}
-                className="hidden sm:block text-sm font-semibold text-[#445064] hover:text-[#0F1B2B]"
-              >
-                Dashboard
-              </button>
-            ) : (
-              <button
-                type="button"
-                onClick={() => navigate("/my-bookings")}
-                className="hidden sm:block text-sm font-semibold text-[#445064] hover:text-[#0F1B2B]"
-              >
-                My Bookings
-              </button>
-            )}
+          {/* Desktop Navigation */}
+          <div className="hidden md:flex items-center gap-8 text-sm font-medium text-[#777e84]">
+            <button
+              type="button"
+              onClick={() => navigate("/fleet")}
+              className="text-[#111518] font-bold"
+            >
+              Fleet
+            </button>
 
             <button
               type="button"
-              onClick={handleLogout}
-              className="bg-[#0F1B2B] text-white text-sm font-semibold px-4 sm:px-5 py-2.5 hover:bg-[#1a2c44] transition-colors"
+              onClick={() => navigate("/")}
+              className="hover:text-[#111518] transition-colors"
             >
-              {user.fullName?.split(" ")[0] || "Account"}
-              <span className="hidden sm:inline">
-                {" "}
-                — Sign out
-              </span>
+              How it works
+            </button>
+
+            <button
+              type="button"
+              onClick={() => navigate("/")}
+              className="hover:text-[#111518] transition-colors"
+            >
+              Locations
             </button>
           </div>
-        ) : (
-          <button
-            type="button"
-            onClick={() => navigate("/auth")}
-            className="bg-[#0F1B2B] text-white text-sm font-semibold px-5 py-2.5 hover:bg-[#1a2c44] transition-colors"
-          >
-            Sign in
-          </button>
-        )}
+
+          {/* User Area */}
+          {user ? (
+            <div className="flex items-center gap-3">
+              {user.role === "admin" ? (
+                <button
+                  type="button"
+                  onClick={() => navigate("/admin")}
+                  className="hidden sm:block text-sm font-bold text-[#777e84] hover:text-[#111518] transition-colors"
+                >
+                  Dashboard
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => navigate("/my-bookings")}
+                  className="hidden sm:block text-sm font-bold text-[#777e84] hover:text-[#111518] transition-colors"
+                >
+                  My Bookings
+                </button>
+              )}
+
+              <button
+                type="button"
+                onClick={handleLogout}
+                className="bg-[#111518] text-white text-sm font-bold px-4 sm:px-5 py-2.5 hover:bg-[#252b2f] transition-colors"
+              >
+                {user.fullName?.split(" ")[0] || "Account"}
+                <span className="hidden sm:inline">
+                  {" "}
+                  — Sign out
+                </span>
+              </button>
+            </div>
+          ) : (
+            <button
+              type="button"
+              onClick={() => navigate("/auth")}
+              className="bg-[#111518] text-white text-sm font-bold px-5 py-2.5 hover:bg-[#252b2f] transition-colors"
+            >
+              Sign in
+            </button>
+          )}
+        </div>
       </nav>
 
       {/* HEADER */}
-      <header className="max-w-7xl mx-auto px-6 md:px-12 pt-4 pb-8">
-        <p className="text-xs font-semibold tracking-wide text-[#445064] mb-2">
-          {loading
-            ? "Loading..."
-            : `${total} ${
-                total === 1 ? "car" : "cars"
-              } available`}
-        </p>
+      <header className="max-w-7xl mx-auto px-6 md:px-12 pt-10 pb-8">
+        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-7">
+          <div>
+            <div className="flex items-center gap-2 mb-3">
+              <span className="w-8 h-[2px] bg-[#f5c542]" />
 
-        <div className="flex flex-col sm:flex-row sm:items-center gap-4 justify-between">
-          <h1 className="font-display text-4xl md:text-5xl font-800">
-            Browse the fleet
-          </h1>
+              <p className="text-[11px] uppercase tracking-[0.18em] font-bold text-[#777e84]">
+                DriveHub Fleet
+              </p>
+            </div>
+
+            <h1 className="font-display text-5xl md:text-6xl lg:text-7xl font-800 tracking-tight leading-none">
+              Find your next ride.
+            </h1>
+
+            <p className="text-sm md:text-base text-[#777e84] mt-4 max-w-xl">
+              Explore our collection of reliable, comfortable and
+              premium vehicles available for your next journey.
+            </p>
+          </div>
 
           {/* Search */}
-          <div className="relative w-full sm:w-80">
+          <div className="relative w-full lg:w-96 shrink-0">
             <Search
-              size={16}
-              className="absolute left-3 top-1/2 -translate-y-1/2 text-[#445064]"
+              size={17}
+              className="absolute left-4 top-1/2 -translate-y-1/2 text-[#777e84]"
             />
 
             <input
               type="text"
-              placeholder="Search by car name..."
+              placeholder="Search vehicles..."
               value={query}
               onChange={(e) =>
                 setQuery(e.target.value)
               }
-              className="w-full border border-[#0F1B2B]/20 bg-white pl-9 pr-9 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#FFC93C]"
+              className="w-full border border-[#111518]/10 bg-white pl-11 pr-11 py-3.5 text-sm font-medium focus:outline-none focus:border-[#f5c542] transition-colors shadow-sm"
             />
 
             {query && (
               <button
                 type="button"
                 onClick={() => setQuery("")}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-[#445064] hover:text-[#0F1B2B]"
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-[#777e84] hover:text-[#111518]"
               >
-                <X size={15} />
+                <X size={16} />
               </button>
             )}
           </div>
         </div>
       </header>
 
-      {/* MAIN */}
-      <div className="max-w-7xl mx-auto px-6 md:px-12 pb-20 grid lg:grid-cols-[260px_1fr] gap-8">
-        {/* DESKTOP FILTERS */}
-        <aside className="hidden lg:block">
-          <div className="bg-white border border-[#0F1B2B]/10 p-5 sticky top-6">
-            <h2 className="font-display text-xl font-700 mb-5">
-              Filters
-            </h2>
+      {/* RESULTS AREA */}
+      <div className="max-w-7xl mx-auto px-6 md:px-12 pb-24">
+        <div className="grid lg:grid-cols-[270px_1fr] gap-8">
+          {/* DESKTOP FILTERS */}
+          <aside className="hidden lg:block">
+            <div className="bg-white border border-[#111518]/10 p-6 sticky top-28 shadow-sm">
+              <div className="flex items-center justify-between mb-7">
+                <div>
+                  <p className="font-display text-2xl font-800">
+                    Refine
+                  </p>
 
-            <FilterPanel />
-          </div>
-        </aside>
+                  <p className="text-xs text-[#777e84] mt-1">
+                    Narrow your search
+                  </p>
+                </div>
 
-        {/* MOBILE FILTER BAR */}
-        <div className="lg:hidden flex items-center justify-between mb-2">
-          <button
-            type="button"
-            onClick={() =>
-              setFiltersOpen(true)
-            }
-            className="flex items-center gap-2 bg-white border border-[#0F1B2B]/20 px-4 py-2.5 text-sm font-semibold"
-          >
-            <SlidersHorizontal size={15} />
-            Filters
-          </button>
-
-          <SortDropdown
-            sort={sort}
-            setSort={setSort}
-          />
-        </div>
-
-        {/* MOBILE FILTER DRAWER */}
-        {filtersOpen && (
-          <div className="fixed inset-0 z-50 lg:hidden">
-            {/* Overlay */}
-            <div
-              className="absolute inset-0 bg-[#0F1B2B]/50"
-              onClick={() =>
-                setFiltersOpen(false)
-              }
-            />
-
-            {/* Drawer */}
-            <div className="absolute right-0 top-0 h-full w-[85%] max-w-sm bg-white p-6 overflow-y-auto">
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="font-display text-xl font-700">
-                  Filters
-                </h2>
-
-                <button
-                  type="button"
-                  onClick={() =>
-                    setFiltersOpen(false)
-                  }
-                  className="p-1 hover:bg-[#EDEEF0]"
-                >
-                  <X size={20} />
-                </button>
+                <SlidersHorizontal
+                  size={18}
+                  className="text-[#777e84]"
+                />
               </div>
 
               <FilterPanel />
-
-              <button
-                type="button"
-                onClick={() =>
-                  setFiltersOpen(false)
-                }
-                className="w-full mt-6 bg-[#FFC93C] text-[#0F1B2B] font-display font-700 text-lg py-3 hover:bg-[#f5bd28] transition-colors"
-              >
-                Show {sortedCars.length}{" "}
-                {sortedCars.length === 1
-                  ? "car"
-                  : "cars"}
-              </button>
             </div>
-          </div>
-        )}
+          </aside>
 
-        {/* RESULTS */}
-        <div>
-          {/* DESKTOP SORT */}
-          <div className="hidden lg:flex justify-end mb-4">
-            <SortDropdown
-              sort={sort}
-              setSort={setSort}
-            />
-          </div>
+          {/* RESULTS */}
+          <div>
+            {/* TOP TOOLBAR */}
+            <div className="flex items-center justify-between gap-4 mb-5">
+              <div>
+                <p className="text-xs font-bold text-[#777e84]">
+                  {loading
+                    ? "Finding available vehicles..."
+                    : `${total} ${
+                        total === 1
+                          ? "vehicle"
+                          : "vehicles"
+                      } available`}
+                </p>
 
-          {/* LOADING */}
-          {loading ? (
-            <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-6">
-              {[...Array(6)].map((_, i) => (
-                <div
-                  key={i}
-                  className="bg-white border border-[#0F1B2B]/10 animate-pulse"
+                {!loading &&
+                  (city !== "All cities" ||
+                    type !== "All types" ||
+                    gear !== "Any" ||
+                    maxPrice < 30000 ||
+                    query) && (
+                    <p className="text-[11px] text-[#999] mt-1">
+                      Showing results based on your filters
+                    </p>
+                  )}
+              </div>
+
+              {/* Mobile Filters */}
+              <div className="lg:hidden flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() =>
+                    setFiltersOpen(true)
+                  }
+                  className="flex items-center gap-2 bg-white border border-[#111518]/10 px-3.5 py-2.5 text-xs font-bold hover:border-[#111518]/30 transition-colors"
                 >
-                  <div className="aspect-[4/3] bg-[#EDEEF0]" />
+                  <SlidersHorizontal size={14} />
+                  Filters
+                </button>
 
-                  <div className="p-4 space-y-3">
-                    <div className="h-4 bg-[#EDEEF0] w-3/4" />
+                <SortDropdown
+                  sort={sort}
+                  setSort={setSort}
+                />
+              </div>
 
-                    <div className="h-3 bg-[#EDEEF0] w-1/2" />
-
-                    <div className="h-6 bg-[#EDEEF0] w-1/3" />
-                  </div>
-                </div>
-              ))}
+              {/* Desktop Sort */}
+              <div className="hidden lg:block">
+                <SortDropdown
+                  sort={sort}
+                  setSort={setSort}
+                />
+              </div>
             </div>
-          ) : error ? (
-            /* ERROR */
-            <div className="bg-white border border-[#0F1B2B]/10 p-12 text-center">
-              <p className="font-display text-2xl font-700 mb-2">
-                Kuch masla ho gaya
-              </p>
 
-              <p className="text-sm text-[#445064] mb-4">
-                {error}
-              </p>
+            {/* MOBILE FILTER DRAWER */}
+            {filtersOpen && (
+              <div className="fixed inset-0 z-50 lg:hidden">
+                <div
+                  className="absolute inset-0 bg-[#111518]/60 backdrop-blur-sm"
+                  onClick={() =>
+                    setFiltersOpen(false)
+                  }
+                />
 
-              <button
-                type="button"
-                onClick={fetchCars}
-                className="text-sm font-semibold bg-[#0F1B2B] text-white px-5 py-2.5 hover:bg-[#1a2c44] transition-colors"
-              >
-                Dobara try karein
-              </button>
-            </div>
-          ) : sortedCars.length === 0 ? (
-            /* NO RESULTS */
-            <div className="bg-white border border-[#0F1B2B]/10 p-12 text-center">
-              <p className="font-display text-2xl font-700 mb-2">
-                No cars match those filters
-              </p>
-
-              <p className="text-sm text-[#445064] mb-4">
-                Try widening your price range
-                or clearing a filter.
-              </p>
-
-              <button
-                type="button"
-                onClick={resetFilters}
-                className="text-sm font-semibold bg-[#0F1B2B] text-white px-5 py-2.5 hover:bg-[#1a2c44] transition-colors"
-              >
-                Reset filters
-              </button>
-            </div>
-          ) : (
-            /* CAR GRID */
-            <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-6">
-              {sortedCars.map((car) => {
-                const price = Number(
-                  car.pricePerDay || 0
-                );
-
-                const rating = Number(
-                  car.rating || 0
-                );
-
-                return (
-                  <div
-                    key={car.id}
-                    className="bg-white border border-[#0F1B2B]/10 group hover:shadow-[6px_6px_0_#0F1B2B] transition-shadow"
-                  >
-                    {/* IMAGE */}
-                    <div className="relative overflow-hidden aspect-[4/3] bg-[#0F1B2B]">
-                      <img
-                        src={
-                          car.images?.[0] ||
-                          PLACEHOLDER_IMG
-                        }
-                        alt={car.name}
-                        className="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-300"
-                        onError={(e) => {
-                          e.currentTarget.src =
-                            PLACEHOLDER_IMG;
-                        }}
-                      />
-
-                      {/* Type */}
-                      <span className="absolute top-3 left-3 bg-[#0F1B2B] text-white text-[11px] font-semibold px-2.5 py-1">
-                        {car.type}
-                      </span>
-
-                      {/* Availability */}
-                      {car.isAvailable === false && (
-                        <span className="absolute top-3 right-3 bg-red-600 text-white text-[10px] font-semibold px-2.5 py-1">
-                          Unavailable
-                        </span>
-                      )}
-                    </div>
-
-                    {/* CONTENT */}
-                    <div className="p-4">
-                      {/* Name + Rating */}
-                      <div className="flex items-start justify-between mb-1">
-                        <h3 className="font-display text-lg font-700 leading-tight">
-                          {car.name}
-                        </h3>
-
-                        <div className="flex items-center gap-1 text-xs font-semibold shrink-0 ml-2">
-                          <Star
-                            size={13}
-                            fill="#FFC93C"
-                            className="text-[#FFC93C]"
-                          />
-
-                          {rating.toFixed(1)}
-                        </div>
-                      </div>
-
-                      {/* City */}
-                      <p className="text-xs text-[#445064] mb-3">
-                        {car.city}
+                <div className="absolute right-0 top-0 h-full w-[88%] max-w-sm bg-white p-6 overflow-y-auto shadow-2xl">
+                  <div className="flex items-center justify-between mb-8">
+                    <div>
+                      <p className="font-display text-2xl font-800">
+                        Refine your search
                       </p>
 
-                      {/* Specs */}
-                      <div className="flex items-center gap-3 text-[#445064] text-xs mb-4">
-                        <span className="flex items-center gap-1">
-                          <Users size={13} />
-                          {car.seats}
-                        </span>
+                      <p className="text-xs text-[#777e84] mt-1">
+                        Choose your preferences
+                      </p>
+                    </div>
 
-                        <span className="flex items-center gap-1">
-                          <Fuel size={13} />
-                          {car.fuel}
-                        </span>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setFiltersOpen(false)
+                      }
+                      className="p-2 bg-[#f3f3f0] hover:bg-[#e8e8e5] transition-colors"
+                    >
+                      <X size={18} />
+                    </button>
+                  </div>
 
-                        <span className="flex items-center gap-1">
-                          <Gauge size={13} />
-                          {car.transmission}
-                        </span>
+                  <FilterPanel />
+
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setFiltersOpen(false)
+                    }
+                    className="w-full mt-8 bg-[#f5c542] text-[#111518] font-display font-800 text-xl py-3.5 hover:bg-[#ffd86b] transition-colors shadow-[4px_4px_0_#111518]"
+                  >
+                    Show {sortedCars.length}{" "}
+                    {sortedCars.length === 1
+                      ? "vehicle"
+                      : "vehicles"}
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* LOADING */}
+            {loading ? (
+              <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-6">
+                {[...Array(6)].map((_, i) => (
+                  <div
+                    key={i}
+                    className="bg-white border border-[#111518]/10 overflow-hidden"
+                  >
+                    <div className="aspect-[4/3] dh-skeleton" />
+
+                    <div className="p-5 space-y-4">
+                      <div className="h-5 dh-skeleton w-3/4" />
+                      <div className="h-3 dh-skeleton w-1/2" />
+
+                      <div className="flex gap-2">
+                        <div className="h-3 dh-skeleton w-14" />
+                        <div className="h-3 dh-skeleton w-14" />
+                        <div className="h-3 dh-skeleton w-14" />
                       </div>
 
-                      {/* Price + Details */}
-                      <div className="flex items-end justify-between gap-3">
-                        <div>
-                          <span className="font-display text-2xl font-800">
-                            Rs{" "}
-                            {price.toLocaleString()}
-                          </span>
-
-                          <span className="text-xs text-[#445064]">
-                            /day
-                          </span>
-                        </div>
-
-                        <button
-                          type="button"
-                          onClick={() =>
-                            navigate(
-                              `/cars/${car.id}`
-                            )
-                          }
-                          className="text-xs font-semibold bg-[#EDEEF0] px-3 py-2 hover:bg-[#FFC93C] transition-colors whitespace-nowrap"
-                        >
-                          View details
-                        </button>
-                      </div>
+                      <div className="h-8 dh-skeleton w-1/3" />
                     </div>
                   </div>
-                );
-              })}
-            </div>
-          )}
+                ))}
+              </div>
+            ) : error ? (
+              /* ERROR */
+              <div className="bg-white border border-[#111518]/10 p-12 md:p-16 text-center">
+                <div className="w-12 h-12 bg-red-50 text-red-600 flex items-center justify-center mx-auto mb-5">
+                  <X size={20} />
+                </div>
+
+                <p className="font-display text-3xl font-800 mb-2">
+                  Something went wrong
+                </p>
+
+                <p className="text-sm text-[#777e84] mb-6 max-w-md mx-auto">
+                  {error}
+                </p>
+
+                <button
+                  type="button"
+                  onClick={fetchCars}
+                  className="bg-[#111518] text-white text-sm font-bold px-6 py-3 hover:bg-[#252b2f] transition-colors"
+                >
+                  Try again
+                </button>
+              </div>
+            ) : sortedCars.length === 0 ? (
+              /* NO RESULTS */
+              <div className="bg-white border border-[#111518]/10 p-12 md:p-16 text-center">
+                <div className="w-14 h-14 bg-[#f3f3f0] flex items-center justify-center mx-auto mb-5">
+                  <Search size={21} className="text-[#777e84]" />
+                </div>
+
+                <p className="font-display text-3xl font-800 mb-2">
+                  No vehicles found
+                </p>
+
+                <p className="text-sm text-[#777e84] mb-6 max-w-md mx-auto">
+                  We couldn't find any vehicles matching
+                  your current search criteria. Try adjusting
+                  your filters.
+                </p>
+
+                <button
+                  type="button"
+                  onClick={resetFilters}
+                  className="bg-[#111518] text-white text-sm font-bold px-6 py-3 hover:bg-[#252b2f] transition-colors"
+                >
+                  Clear filters
+                </button>
+              </div>
+            ) : (
+              /* CAR GRID */
+              <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-6">
+                {sortedCars.map((car) => {
+                  const price = Number(
+                    car.pricePerDay || 0
+                  );
+
+                  const rating = Number(
+                    car.rating || 0
+                  );
+
+                  return (
+                    <div
+                      key={car.id}
+                      className="dh-card bg-white border border-[#111518]/10 group overflow-hidden hover:shadow-[6px_6px_0_#111518]"
+                    >
+                      {/* IMAGE */}
+                      <div className="relative overflow-hidden aspect-[4/3] bg-[#111518]">
+                        <img
+                          src={
+                            car.images?.[0] ||
+                            PLACEHOLDER_IMG
+                          }
+                          alt={car.name}
+                          className="w-full h-full object-cover group-hover:scale-[1.06] transition-transform duration-700"
+                          onError={(e) => {
+                            e.currentTarget.src =
+                              PLACEHOLDER_IMG;
+                          }}
+                        />
+
+                        {/* Image Overlay */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-[#111518]/40 via-transparent to-transparent pointer-events-none" />
+
+                        {/* Type */}
+                        <span className="absolute top-3 left-3 bg-[#111518] text-white text-[10px] uppercase tracking-wider font-bold px-3 py-1.5">
+                          {car.type}
+                        </span>
+
+                        {/* Availability */}
+                        {car.isAvailable === false ? (
+                          <span className="absolute top-3 right-3 bg-red-600 text-white text-[10px] uppercase tracking-wider font-bold px-3 py-1.5">
+                            Unavailable
+                          </span>
+                        ) : (
+                          <span className="absolute top-3 right-3 bg-white text-[#111518] text-[10px] uppercase tracking-wider font-bold px-3 py-1.5">
+                            Available
+                          </span>
+                        )}
+
+                        {/* City */}
+                        {car.city && (
+                          <span className="absolute bottom-3 left-3 flex items-center gap-1.5 text-white text-[11px] font-semibold">
+                            <MapPin size={12} />
+                            {car.city}
+                          </span>
+                        )}
+                      </div>
+
+                      {/* CONTENT */}
+                      <div className="p-5">
+                        {/* Name + Rating */}
+                        <div className="flex items-start justify-between gap-3 mb-1">
+                          <h3 className="font-display text-xl font-800 leading-tight">
+                            {car.name}
+                          </h3>
+
+                          <div className="flex items-center gap-1 bg-[#f3f3f0] px-2 py-1 text-xs font-bold shrink-0">
+                            <Star
+                              size={12}
+                              fill="#f5c542"
+                              className="text-[#f5c542]"
+                            />
+
+                            {rating.toFixed(1)}
+                          </div>
+                        </div>
+
+                        {/* Vehicle description */}
+                        <p className="text-xs text-[#777e84] mb-4">
+                          Premium {car.type?.toLowerCase() || "vehicle"} for your journey
+                        </p>
+
+                        {/* Specs */}
+                        <div className="grid grid-cols-3 border-y border-[#111518]/8 py-3 mb-5">
+                          <div className="flex items-center gap-1.5 text-[#777e84] text-[11px]">
+                            <Users size={13} />
+                            <span>{car.seats} Seats</span>
+                          </div>
+
+                          <div className="flex items-center gap-1.5 text-[#777e84] text-[11px]">
+                            <Fuel size={13} />
+                            <span>{car.fuel}</span>
+                          </div>
+
+                          <div className="flex items-center gap-1.5 text-[#777e84] text-[11px]">
+                            <Gauge size={13} />
+                            <span>{car.transmission}</span>
+                          </div>
+                        </div>
+
+                        {/* Price + Details */}
+                        <div className="flex items-end justify-between gap-3">
+                          <div>
+                            <p className="text-[10px] uppercase tracking-wider font-bold text-[#777e84] mb-0.5">
+                              Starting from
+                            </p>
+
+                            <div className="flex items-baseline">
+                              <span className="font-display text-2xl font-800">
+                                Rs {price.toLocaleString()}
+                              </span>
+
+                              <span className="text-xs text-[#777e84] ml-1">
+                                / day
+                              </span>
+                            </div>
+                          </div>
+
+                          <button
+                            type="button"
+                            onClick={() =>
+                              navigate(`/cars/${car.id}`)
+                            }
+                            className="dh-button bg-[#111518] text-white text-xs font-bold px-4 py-2.5 hover:bg-[#f5c542] hover:text-[#111518]"
+                          >
+                            View details
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>
   );
 }
 
-/* =========================================
+/* =========================================================
    SORT DROPDOWN
-========================================= */
+   ========================================================= */
 
 function SortDropdown({ sort, setSort }) {
   const [open, setOpen] = useState(false);
@@ -721,12 +821,18 @@ function SortDropdown({ sort, setSort }) {
       <button
         type="button"
         onClick={() => setOpen((prev) => !prev)}
-        className="flex items-center gap-2 bg-white border border-[#0F1B2B]/20 px-4 py-2.5 text-sm font-semibold"
+        className="flex items-center gap-2 bg-white border border-[#111518]/10 px-3.5 py-2.5 text-xs font-bold hover:border-[#111518]/30 transition-colors"
       >
-        Sort: {sort}
+        <ArrowUpDown size={14} />
+
+        <span className="hidden sm:inline">
+          Sort:
+        </span>
+
+        <span>{sort}</span>
 
         <ChevronDown
-          size={15}
+          size={14}
           className={`transition-transform ${
             open ? "rotate-180" : ""
           }`}
@@ -741,7 +847,14 @@ function SortDropdown({ sort, setSort }) {
             onClick={() => setOpen(false)}
           />
 
-          <div className="absolute right-0 mt-1 bg-white border border-[#0F1B2B]/10 shadow-lg z-10 w-56">
+          {/* Dropdown */}
+          <div className="absolute right-0 mt-2 bg-white border border-[#111518]/10 shadow-xl z-10 w-56 overflow-hidden">
+            <div className="px-4 py-3 border-b border-[#111518]/8">
+              <p className="text-[10px] uppercase tracking-wider font-bold text-[#777e84]">
+                Sort vehicles
+              </p>
+            </div>
+
             {sortOptions.map((option) => (
               <button
                 key={option}
@@ -750,13 +863,17 @@ function SortDropdown({ sort, setSort }) {
                   setSort(option);
                   setOpen(false);
                 }}
-                className={`block w-full text-left px-4 py-2.5 text-sm hover:bg-[#EDEEF0] transition-colors ${
+                className={`flex items-center justify-between w-full text-left px-4 py-3 text-xs hover:bg-[#f3f3f0] transition-colors ${
                   sort === option
-                    ? "font-semibold bg-[#EDEEF0]"
-                    : ""
+                    ? "font-bold bg-[#f3f3f0]"
+                    : "text-[#777e84]"
                 }`}
               >
                 {option}
+
+                {sort === option && (
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#f5c542]" />
+                )}
               </button>
             ))}
           </div>
